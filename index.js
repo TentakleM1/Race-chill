@@ -1,52 +1,38 @@
 
 class Character {
     constructor() {
-        this.name = ''
-        this.newPosition = 0
-        this.oldPosition = this.newPosition
-        this.id = Date.now()
+        this.data = {}
     }
 
-    draw() {
-        const element = document.createElement('div')
-        element.className = this.name 
-        element.id = this.id
-        return element
-    }
-
-    getPosition() {
-        return { oldPosition: this.oldPosition, newPosition: this.newPosition }
+    getData() {
+        return this.data
     }
 }
 
 class Player extends Character {
     constructor() {
-        super()
-        this.name = 'player'
-        this.speed = 200
-        this.eventControll = this.controll.bind(this)
+        super();
+        this.data = {
+            type: 'player',
+            color: 'red',
+            position: {
+                x: 1,
+                y: 5
+            }
+        };
+        this.eventControll = this.controll.bind(this);
     }
 
     controll(e) {
-        const key = e.code
+        const key = e.code;
 
-        if(key === 'ArrowRight' && this.newPosition + 1 <= 3) {
-            this.oldPosition = this.newPosition
-            this.newPosition = this.newPosition + 1 
-        }
-
-        if(key === 'ArrowLeft' && this.newPosition - 1 >= 0) {
-            this.oldPosition = this.newPosition
-            this.newPosition = this.newPosition - 1 
+        if(key === 'ArrowRight') {
+            this.data.position.x = this.data.position.x + 1
         }
 
-        if(key === 'ArrowUp' && this.speed > 100 ) {
-            this.speed = this.speed - 50
-        }
-            
-        if(key === 'ArrowDown' && this.speed < 200 ) {
-            this.speed = this.speed + 50 
-        }
+        if(key === 'ArrowLeft') {
+            this.data.position.x = this.data.position.x - 1
+        } 
     }
 
     getSpeed() {
@@ -107,14 +93,13 @@ class NPC extends Character {
 class Core {
 
     map = [
-        ['0','0','0','0'],
-        ['0','0','0','0'],
-        ['0','0','0','0'],
-        ['0','0','0','0'],
-        ['0','0','0','0'],
-        ['0','0','0','0'],
-        ['0','0','0','0'],
-        ['0','0','0','0']
+        [{type: 'nope'}, {type: 'nope'}, {type: 'nope'}, {type: 'nope'}],
+        [{type: 'nope'}, {type: 'police', color: 'green', position: { x: 1, y: 2 }}, {type: 'nope'}, {type: 'nope'}],
+        [{type: 'nope'}, {type: 'nope'}, {type: 'nope'}, {type: 'nope'}],
+        [{type: 'nope'}, {type: 'nope'}, {type: 'nope'}, {type: 'nope'}],
+        [{type: 'nope'}, {type: 'nope'}, {type: 'nope'}, {type: 'nope'}],
+        [{type: 'nope'}, {type: 'player', color: 'red', position: { x: 1, y: 5 }}, {type: 'nope'}, {type: 'nope'}],
+        [{type: 'nope'}, {type: 'nope'}, {type: 'nope'}, {type: 'nope'}],
     ]
 
     constructor() {
@@ -144,7 +129,7 @@ class Core {
             clearInterval(this.checkTemp) 
             cancelAnimationFrame(this.checkUpdate)
         } 
-        console.log(this.npc)
+
         // навнешиваем событие на управление машиной
         this.player.addEvent()
         this.checkSpawn = setInterval(this.respawn, this.speedSpawn)
@@ -154,75 +139,90 @@ class Core {
     }
 
     spawn() {
-        if(this.npc.length < 3) {
-            const newNpc = new NPC(4)
-            this.npc.push(newNpc)
+        // if(this.npc.length < 3) {
+        //     const newNpc = new NPC(4)
+        //     this.npc.push(newNpc)
 
-            this.map[0][newNpc.getXPosition()] = '#'
-        } else {
-            if(!this.npc[0].move()) {
-                this.npc.shift()
-            }
-        }
+        //     this.map[0][newNpc.getXPosition()] = '#'
+        // } else {
+        //     if(!this.npc[0].move()) {
+        //         this.npc.shift()
+        //     }
+        // }
     }
 
     temp() {
-        if(this.speed !== this.player.getSpeed()) {
+        // if(this.speed !== this.player.getSpeed()) {
 
-            this.speed = this.player.getSpeed()
-            this.initialGame()
-        }
+        //     this.speed = this.player.getSpeed()
+        //     this.initialGame()
+        // }
 
-        if(this.npc.length === 0) { return; }
+        // if(this.npc.length === 0) { return; }
 
-        this.npc.forEach((npc) => {
-            const move = npc.move()
+        // this.npc.forEach((npc) => {
+        //     const move = npc.move()
 
-            const { oldPosition, newPosition } = npc.getPosition()
+        //     const { oldPosition, newPosition } = npc.getPosition()
 
-            if(move) {
+        //     if(move) {
 
-                this.map[oldPosition][npc.getXPosition()] = '0'
+        //         this.map[oldPosition][npc.getXPosition()] = '0'
 
-                this.map[newPosition][npc.getXPosition()] = '#'
+        //         this.map[newPosition][npc.getXPosition()] = '#'
 
-            } else {
-                this.map[newPosition][npc.getXPosition()] = '0'
-            }
+        //     } else {
+        //         this.map[newPosition][npc.getXPosition()] = '0'
+        //     }
 
-        })
+        // })
         
+    }
+
+    checkMap() {
+        for(let row = 0; row < this.map[0].length; row++) {
+
+            for(let col = 0; col < this.map.length; col++) {
+
+                const element = this.map[col][row];
+
+                if(element.type === 'player') {
+
+                    const data = this.player.getData();
+                    const { position } = data
+
+                    if(element.position.x !== position.x) {
+                        console.log('work')
+                        this.map[col][row] = {type:'nope'}
+                        this.map[position.y][position.x] = data  
+                    }
+
+                }
+
+            };    
+        };
     }
 
     draw() {
         this.game.innerHTML = ''
 
-        // берем позицию игрока
-        const { oldPosition, newPosition } = this.player.getPosition()
-
-        // удаляем старую позицию с карты добовляем новую 
-
-        if(this.map[6][oldPosition] !== '#') { this.map[6][oldPosition] = '0'; }
-
-        this.map[6][newPosition] = '1';
+        this.checkMap()
 
         // отрисовываем дорогу с игроком 
         this.map.flat().forEach((road) => {
             const div = document.createElement('div')
             div.id = 'row'
-            
-            if(+road === 1) {
-                div.append(this.player.draw())
-            }
 
-            if(road !== 0) {  
-                console.log(this.npc)
-                div.append(this.npc[0].draw())
+            if(road.type !== 'nope') {
+
+                const car = document.createElement('div')
+                car.id = road.type
+                car.style.backgroundColor = road.color
+                div.append(car)
             }
 
             this.game.append(div)
         })
-
     }
 
     update() {

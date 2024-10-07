@@ -86,11 +86,11 @@ button {
     justify-content: center;
 }
 
-.player {
+#player {
     width: 40px;
     height: 50px;
 
-    background: url('./assets/sprites/car/player.png');
+    /* background: url('./assets/sprites/car/player.png'); */
 }
 
 .interference {
@@ -100,11 +100,11 @@ button {
     background: url('./assets/sprites/car/hole.png');
 }
 
-.police {
+#police {
     width: 40px;
     height: 50px;
 
-    background: url('./assets/sprites/car/police.png');
+    /* background: url('./assets/sprites/car/police.png'); */
 }
 
 .car {
