@@ -26,11 +26,11 @@ class Player extends Character {
     controll(e) {
         const key = e.code;
 
-        if(key === 'ArrowRight') {
+        if(key === 'ArrowRight' && this.data.position.x < 3) {
             this.data.position.x = this.data.position.x + 1
         }
 
-        if(key === 'ArrowLeft') {
+        if(key === 'ArrowLeft' && this.data.position.x > 0) {
             this.data.position.x = this.data.position.x - 1
         } 
     }
@@ -49,10 +49,17 @@ class Player extends Character {
 }
 
 class NPC extends Character {
-    constructor(max) {
+    constructor() {
         super()
-        this.name = 'car'
-        this.xPosition = Math.floor(Math.random() * max)
+        this.data = {
+            id: Date.now(),
+            type: 'car',
+            color: 'green',
+            position: {
+                x: Math.floor(Math.random() * 3),
+                y: 0
+            }
+        }
     }
 
     move() {
@@ -94,7 +101,7 @@ class Core {
 
     map = [
         [{type: 'nope'}, {type: 'nope'}, {type: 'nope'}, {type: 'nope'}],
-        [{type: 'nope'}, {type: 'police', color: 'green', position: { x: 1, y: 2 }}, {type: 'nope'}, {type: 'nope'}],
+        [{type: 'nope'}, {type: 'nope'}, {type: 'nope'}, {type: 'nope'}],
         [{type: 'nope'}, {type: 'nope'}, {type: 'nope'}, {type: 'nope'}],
         [{type: 'nope'}, {type: 'nope'}, {type: 'nope'}, {type: 'nope'}],
         [{type: 'nope'}, {type: 'nope'}, {type: 'nope'}, {type: 'nope'}],
@@ -139,44 +146,25 @@ class Core {
     }
 
     spawn() {
-        // if(this.npc.length < 3) {
-        //     const newNpc = new NPC(4)
-        //     this.npc.push(newNpc)
-
-        //     this.map[0][newNpc.getXPosition()] = '#'
-        // } else {
-        //     if(!this.npc[0].move()) {
-        //         this.npc.shift()
-        //     }
-        // }
+        if(this.npc.length < 3) {
+            const newNpc = new NPC(); 
+            const data = newNpc.getData();
+            this.npc.push(data.id)
+            this.map[newNpc.data.position.y][newNpc.data.position.x] = data;
+        }
     }
 
     temp() {
-        // if(this.speed !== this.player.getSpeed()) {
 
-        //     this.speed = this.player.getSpeed()
-        //     this.initialGame()
-        // }
+        this.map.flat().forEach(car => {
+            if(car.id) {
+                if(car.position.y !== 7) {
+                    car.position.y = car.position.y + 1;
+                    
+                }
+            }
+        })
 
-        // if(this.npc.length === 0) { return; }
-
-        // this.npc.forEach((npc) => {
-        //     const move = npc.move()
-
-        //     const { oldPosition, newPosition } = npc.getPosition()
-
-        //     if(move) {
-
-        //         this.map[oldPosition][npc.getXPosition()] = '0'
-
-        //         this.map[newPosition][npc.getXPosition()] = '#'
-
-        //     } else {
-        //         this.map[newPosition][npc.getXPosition()] = '0'
-        //     }
-
-        // })
-        
     }
 
     checkMap() {
@@ -189,16 +177,28 @@ class Core {
                 if(element.type === 'player') {
 
                     const data = this.player.getData();
-                    const { position } = data
 
-                    if(element.position.x !== position.x) {
-                        console.log('work')
-                        this.map[col][row] = {type:'nope'}
-                        this.map[position.y][position.x] = data  
-                    }
+                    const { position } = data;
+
+
+                    this.map[col][row] = {type:'nope'};
+
+                    this.map[position.y][position.x] = data; 
 
                 }
 
+                if(element.id) {
+                    const car = element;
+
+                    this.map[col][row] = {type: 'nope'};
+
+                    if(car.position.y !== 7) {
+                        this.map[car.position.y][car.position.x] = car;   
+                    } else {
+                        this.npc.shift()
+                    }
+
+                }
             };    
         };
     }
@@ -214,7 +214,6 @@ class Core {
             div.id = 'row'
 
             if(road.type !== 'nope') {
-
                 const car = document.createElement('div')
                 car.id = road.type
                 car.style.backgroundColor = road.color
