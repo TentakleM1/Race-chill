@@ -4,11 +4,13 @@ class Character {
         this.name = ''
         this.newPosition = 0
         this.oldPosition = this.newPosition
+        this.id = Date.now()
     }
 
     draw() {
         const element = document.createElement('div')
         element.className = this.name 
+        element.id = this.id
         return element
     }
 
@@ -22,39 +24,48 @@ class Player extends Character {
         super()
         this.name = 'player'
         this.speed = 200
+        this.eventControll = this.controll.bind(this)
     }
 
     controll(e) {
-            const key = e.code
+        const key = e.code
 
-            if(key === 'ArrowRight' && this.newPosition + 1 <= 3) {
-                this.oldPosition = this.newPosition
-                this.newPosition = this.newPosition + 1 
-            }
+        if(key === 'ArrowRight' && this.newPosition + 1 <= 3) {
+            this.oldPosition = this.newPosition
+            this.newPosition = this.newPosition + 1 
+        }
 
-            if(key === 'ArrowLeft' && this.newPosition - 1 >= 0) {
-                this.oldPosition = this.newPosition
-                this.newPosition = this.newPosition - 1 
-            }
+        if(key === 'ArrowLeft' && this.newPosition - 1 >= 0) {
+            this.oldPosition = this.newPosition
+            this.newPosition = this.newPosition - 1 
+        }
 
-            if(key === 'ArrowUp' && this.speed > 100 ) {
-                this.speed = this.speed - 50
-            }
+        if(key === 'ArrowUp' && this.speed > 100 ) {
+            this.speed = this.speed - 50
+        }
             
-            if(key === 'ArrowDown' && this.speed < 200 ) {
-                this.speed = this.speed + 50 
-            }
+        if(key === 'ArrowDown' && this.speed < 200 ) {
+            this.speed = this.speed + 50 
+        }
     }
 
     getSpeed() {
         return this.speed
+    }
+
+    removeEvent() {
+        window.removeEventListener('keydown', this.eventControll)
+    }
+
+    addEvent() {
+        window.addEventListener('keydown', this.eventControll)
     }
 }
 
 class NPC extends Character {
     constructor(max) {
         super()
-        this.name = 'police'
+        this.name = 'car'
         this.xPosition = Math.floor(Math.random() * max)
     }
 
@@ -68,20 +79,28 @@ class NPC extends Character {
 
     skin() {
         const random = Math.floor(Math.random() * 2)
-        if(random === 0) {
-            return 'police'
+        let skin
+        switch(random) {
+            case 0: 
+                skin = 'police' 
+                break;   
+            case 1:
+                skin = 'interference'
+                break;
+            case 2:
+                skin = 'car'
+                break;    
         }
-
-        if(random === 1) {
-            return 'interference'
-        } else {
-            return 'car'
-        }
+        return skin
     }
 
 
     getXPosition() {
         return this.xPosition
+    }
+
+    getId() {
+        return this.id
     }
 }
 
@@ -120,15 +139,14 @@ class Core {
     initialGame() {  
 
         if(this.checkSpawn && this.checkTemp && this.update) {
+            this.player.removeEvent()
             clearInterval(this.checkSpawn) 
             clearInterval(this.checkTemp) 
             cancelAnimationFrame(this.checkUpdate)
         } 
-
+        console.log(this.npc)
         // навнешиваем событие на управление машиной
-
-        window.addEventListener('keydown', this.player.controll)
-
+        this.player.addEvent()
         this.checkSpawn = setInterval(this.respawn, this.speedSpawn)
         this.checkTemp = setInterval(this.loopTemp, this.speed)
         this.update()   
@@ -138,7 +156,6 @@ class Core {
     spawn() {
         if(this.npc.length < 3) {
             const newNpc = new NPC(4)
-
             this.npc.push(newNpc)
 
             this.map[0][newNpc.getXPosition()] = '#'
@@ -147,7 +164,6 @@ class Core {
                 this.npc.shift()
             }
         }
-
     }
 
     temp() {
@@ -157,7 +173,7 @@ class Core {
             this.initialGame()
         }
 
-        if(this.npc.length === 0) return
+        if(this.npc.length === 0) { return; }
 
         this.npc.forEach((npc) => {
             const move = npc.move()
@@ -186,20 +202,21 @@ class Core {
 
         // удаляем старую позицию с карты добовляем новую 
 
-        if(this.map[6][oldPosition] !== '#') this.map[6][oldPosition] = '0'
+        if(this.map[6][oldPosition] !== '#') { this.map[6][oldPosition] = '0'; }
 
-        this.map[6][newPosition] = '1'
+        this.map[6][newPosition] = '1';
 
         // отрисовываем дорогу с игроком 
-        this.map.flat().forEach(road => {
+        this.map.flat().forEach((road) => {
             const div = document.createElement('div')
             div.id = 'row'
-
+            
             if(+road === 1) {
                 div.append(this.player.draw())
             }
 
-            if(road === '#') {
+            if(road !== 0) {  
+                console.log(this.npc)
                 div.append(this.npc[0].draw())
             }
 
