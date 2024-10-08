@@ -75,7 +75,7 @@ class Player extends Character {
       }
       case "Space": {
         if(this.speed === 50) { break; }
-        this.speed = this.speed -50
+        this.speed = this.speed -10
       }
     }
   }
@@ -83,6 +83,9 @@ class Player extends Character {
   get speed() {
     return this.speed;
   }
+  set speed(speed) {
+    this.speed = speed;
+  } 
 
   removeEvent() {
     window.removeEventListener("keydown", this.eventControll);

@@ -71,6 +71,14 @@ class Core {
     }
     this.scoreElement.innerHTML = this.score;
     this.score = this.score + 1;
+    console.log(this.speed)
+    this.checkScore();
+  }
+
+  checkScore() {
+    const upTeen = this.score % 10;
+    if (upTeen) { return; }
+    this.player.speed =  this.speed - 10;
 
   }
 
@@ -163,7 +171,7 @@ class Core {
       if (road.type === "car") {
         return this.endGame();
       }
-      this.player.data.xRoad = this.map[position.y]
+      this.player.data.xRoad = this.map[position.y];
       return (this.map[position.y][position.x] = data);
     }
 
@@ -227,12 +235,7 @@ class Core {
     }
   }
 
-  checkSpeed() {
-    const speed = this.player.speed;
-    if (speed === this.speed) {
-      return;
-    }
-
+  levelUp(speed) {
     this.endgame = false;
     this.speed = speed;
 
@@ -246,6 +249,14 @@ class Core {
     }
 
     this.initialGame();
+  }
+
+  checkSpeed() {
+    const speed = this.player.speed;
+    if (speed === this.speed) {
+      return;
+    }
+    this.levelUp(speed);
   }
 
   draw() {
@@ -286,7 +297,7 @@ class Core {
     if (!this.endgame) {
       return;
     }
-
+      
     this.checkSpeed();
     this.draw();
     this.checkUpdate = requestAnimationFrame(this.rerender);
