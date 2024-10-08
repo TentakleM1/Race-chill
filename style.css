@@ -90,10 +90,10 @@ button {
     width: 40px;
     height: 50px;
 
-    /* background: url('./assets/sprites/car/player.png'); */
+    background: url('./assets/sprites/car/player.png');
 }
 
-.interference {
+#interference {
     width: 40px;
     height: 50px;
 
@@ -104,12 +104,51 @@ button {
     width: 40px;
     height: 50px;
 
-    /* background: url('./assets/sprites/car/police.png'); */
+    background: url('./assets/sprites/car/police.png');
 }
 
 #car {
     width: 40px;
     height: 50px;
 
-    /* background: url('./assets/sprites/car/yellow.png'); */
+    background: url('./assets/sprites/car/yellow.png');
+}
+
+#start {
+    width: 300px;
+    height: 300px;
+    background-color: #0000008a;
+    position: absolute;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#block {
+    width: 50px;
+    height: 50px;
+
+    background: yellow;
+}
+
+#none {
+    width: 50px;
+    height: 50px;
+
+    display: flex;
+}
+
+#road {
+    width: 50px;
+    height: 50px;
+
+    background: yellow;
+}
+
+.press {    
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
