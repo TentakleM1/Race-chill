@@ -175,37 +175,12 @@ class Core {
       const car = element;
 
       if (car.position.y !== -1) {
-
         if(car.double) {
+          
           if(car.position.y > 1) {
-            this.map[car.position.y - 2][row] = { type: "nope" };
-          } 
-
-
-          if (car.position.y !== 8) {
-            const player = this.map[car.position.y][car.position.x];
-            
-            if (player.type === "player") {
-              return this.endGame();
-            }
-
-            if(player.type = "kamaz") {
-              return;
-            }
-
-            return (this.map[car.position.y][car.position.x] = car);
-
-          } else {
-
-            this.scoreCount();
-
-            this.map[col][row] = { type: "nope" };
-
-            return this.npc.shift();
-
+            this.map[car.position.y - 1][car.position.x] = car;
           }
-
-        }
+        }  
 
         // this.map[col][row] = { type: "nope" };
 
@@ -222,6 +197,7 @@ class Core {
 
         //   return this.npc.shift();
         // }
+        
       }
     }
 
