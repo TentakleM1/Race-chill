@@ -83,6 +83,7 @@ class Player extends Character {
   get speed() {
     return this.speed;
   }
+  
   set speed(speed) {
     this.speed = speed;
   } 

@@ -34,7 +34,6 @@ class Core {
     this.score = 0;
     this.speed = 200;
     this.speedSpawn = 700;
-    this.speedScore = 500;
 
     this.checkUpdate;
     this.checkEvent = [];
@@ -50,11 +49,9 @@ class Core {
 
     this.scoreElement.innerHTML = this.score;
 
-    this.checkOrRemoveListenEvent();
+    this.checkAndRemoveListenEvent();
 
     this.player.addEvent();
-
-    this.checkEvent.push(setInterval(this.bindScore, this.speedScore));
 
     this.checkEvent.push(setInterval(this.respawn, this.speedSpawn));
 
@@ -71,18 +68,16 @@ class Core {
     }
     this.scoreElement.innerHTML = this.score;
     this.score = this.score + 1;
-    console.log(this.speed)
     this.checkScore();
   }
 
   checkScore() {
-    const upTeen = this.score % 10;
-    if (upTeen) { return; }
+    const RemainderOfDivisionTeen  = this.score % 10;
+    if (RemainderOfDivisionTeen) { return; }
     this.player.speed =  this.speed - 10;
-
   }
 
-  checkOrRemoveListenEvent() {
+  checkAndRemoveListenEvent() {
     if (this.checkEvent.length && this.checkUpdate) {
       this.player.removeEvent();
 
@@ -171,6 +166,7 @@ class Core {
       if (road.type === "car") {
         return this.endGame();
       }
+
       this.player.data.xRoad = this.map[position.y];
       return (this.map[position.y][position.x] = data);
     }
@@ -179,21 +175,53 @@ class Core {
       const car = element;
 
       if (car.position.y !== -1) {
-        this.map[col][row] = { type: "nope" };
 
-        if (car.position.y !== 8) {
-          const player = this.map[car.position.y][car.position.x];
+        if(car.double) {
+          if(car.position.y > 1) {
+            this.map[car.position.y - 2][row] = { type: "nope" };
+          } 
 
-          if (player.type === "player") {
-            return this.endGame();
+
+          if (car.position.y !== 8) {
+            const player = this.map[car.position.y][car.position.x];
+            
+            if (player.type === "player") {
+              return this.endGame();
+            }
+
+            if(player.type = "kamaz") {
+              return;
+            }
+
+            return (this.map[car.position.y][car.position.x] = car);
+
+          } else {
+
+            this.scoreCount();
+
+            this.map[col][row] = { type: "nope" };
+
+            return this.npc.shift();
+
           }
 
-          return (this.map[car.position.y][car.position.x] = car);
-        } else {
-          this.scoreCount();
-
-          return this.npc.shift();
         }
+
+        // this.map[col][row] = { type: "nope" };
+
+        // if (car.position.y !== 8) {
+        //   const player = this.map[car.position.y][car.position.x];
+
+        //   if (player.type === "player") {
+        //     return this.endGame();
+        //   }
+
+        //   return (this.map[car.position.y][car.position.x] = car);
+        // } else {
+        //   this.scoreCount();
+
+        //   return this.npc.shift();
+        // }
       }
     }
 
@@ -241,9 +269,6 @@ class Core {
 
     if (this.speed < 200) {
       this.speedSpawn = 500;
-      this.speedScore = 400;
-    } else if (this.speed < 150) {
-      this.speedScore = 300;
     } else {
       this.speedSpawn = 700;
     }
@@ -303,12 +328,8 @@ class Core {
     this.checkUpdate = requestAnimationFrame(this.rerender);
   }
 
-  startGame() {
-    this.initialGame();
-  }
-
   endGame() {
-    this.checkOrRemoveListenEvent();
+    this.checkAndRemoveListenEvent();
 
     this.endgame = false;
 

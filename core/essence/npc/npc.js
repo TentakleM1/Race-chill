@@ -3,11 +3,12 @@ class NPC extends Character {
     super();
     this.data = {
       id: Date.now(),
-      type: this.skin(),
+      type: 'kamaz',
       position: {
         x: Math.floor(Math.random() * 4),
         y: -1,
       },
+      double: true
     };
   }
 

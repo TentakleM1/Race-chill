@@ -9,7 +9,7 @@ window.addEventListener('keydown', (e) => {
         if(start.style.visibility === 'hidden') { return }
         
         start.style.visibility = 'hidden';
-        core.startGame();
+        core.initialGame();
         return;
 
     }
