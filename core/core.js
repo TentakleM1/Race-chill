@@ -21,6 +21,8 @@ class Core {
     this.title = document.getElementById("title");
     this.scoreElement = document.getElementById("score");
     this.record = document.getElementById("record");
+    this.background = document.getElementById("background");
+    this.levelElement = document.getElementById("level");
 
     this.endgame = false;
 
@@ -33,7 +35,9 @@ class Core {
 
     this.score = 0;
     this.speed = 200;
+    this.speedBackgorund = 3;
     this.speedSpawn = 700;
+    this.level = 1
 
     this.checkUpdate;
     this.checkEvent = [];
@@ -72,9 +76,11 @@ class Core {
   }
 
   checkScore() {
-    const RemainderOfDivisionTeen  = this.score % 10;
-    if (RemainderOfDivisionTeen) { return; }
-    this.player.speed =  this.speed - 10;
+    const RemainderOfDivisionTeen = this.score % 10;
+    if (RemainderOfDivisionTeen) {
+      return;
+    }
+    this.player.speed = this.speed - 10;
   }
 
   checkAndRemoveListenEvent() {
@@ -145,7 +151,7 @@ class Core {
 
     if (leftOrRight === 1) {
       const road = this.map[0][3];
-
+      this.npc.shift();
       if (road.type !== "none") {
         return (this.map[0][3] = { type: "block", position: { x: 3, y: -1 } });
       }
@@ -163,7 +169,7 @@ class Core {
 
       const road = this.map[position.y][position.x];
 
-      if (road.type === "car") {
+      if (road.id || road.type === "kamaz-front") {
         return this.endGame();
       }
 
@@ -175,29 +181,44 @@ class Core {
       const car = element;
 
       if (car.position.y !== -1) {
-        if(car.double) {
-          
-          if(car.position.y > 1) {
-            this.map[car.position.y - 1][car.position.x] = car;
+        if (car.type === "kamaz") {
+          this.map[col][row] = { type: "kamaz-front" };
+          if (col > 1) {
+            this.map[col - 2][row] = { type: "nope" };
           }
-        }  
 
-        // this.map[col][row] = { type: "nope" };
+          if (car.position.y !== 8) {
+            const player = this.map[car.position.y][car.position.x];
 
-        // if (car.position.y !== 8) {
-        //   const player = this.map[car.position.y][car.position.x];
+            if (player.type === "player") {
+              return this.endGame();
+            }
 
-        //   if (player.type === "player") {
-        //     return this.endGame();
-        //   }
+            return (this.map[car.position.y][car.position.x] = car);
+          } 
+            this.map[col][row] = { type: "kamaz-front" };
+            this.map[col - 1][row] = { type: "nope" };
+            setTimeout(() => {
+              this.map[col][row] = { type: "nope" };
+            }, this.speed);
+            this.scoreCount();
+            return this.npc.shift();
+        }
 
-        //   return (this.map[car.position.y][car.position.x] = car);
-        // } else {
-        //   this.scoreCount();
+        this.map[col][row] = { type: "nope" };
 
-        //   return this.npc.shift();
-        // }
-        
+        if (car.position.y !== 8) {
+          const player = this.map[car.position.y][car.position.x];
+
+          if (player.type === "player") {
+            return this.endGame();
+          }
+
+          return (this.map[car.position.y][car.position.x] = car);
+        }
+          this.scoreCount();
+
+          return this.npc.shift();
       }
     }
 
@@ -242,6 +263,12 @@ class Core {
   levelUp(speed) {
     this.endgame = false;
     this.speed = speed;
+    this.level = this.level + 1;
+    this.levelElement.innerHTML = this.level;
+    if(this.speedBackgorund > 1) {
+      this.speedBackgorund = this.speedBackgorund - 0.5;
+      this.background.style.animationDuration = `${this.speedBackgorund.toFixed(1)}s`;
+    } 
 
     if (this.speed < 200) {
       this.speedSpawn = 500;
@@ -298,7 +325,7 @@ class Core {
     if (!this.endgame) {
       return;
     }
-      
+
     this.checkSpeed();
     this.draw();
     this.checkUpdate = requestAnimationFrame(this.rerender);
@@ -309,6 +336,12 @@ class Core {
 
     this.endgame = false;
 
+    this.background.style.animationDuration = "3s";
+    this.speedBackgorund = 3;
+
+    this.levelElement.innerHTML = 1;
+    this.level = 1;
+    
     this.start.style.visibility = "visible";
 
     this.title.innerHTML = "End Game";

@@ -3,18 +3,17 @@ class NPC extends Character {
     super();
     this.data = {
       id: Date.now(),
-      type: 'kamaz',
+      type: this.skin(),
       position: {
         x: Math.floor(Math.random() * 4),
         y: -1,
       },
-      double: true
     };
   }
 
   skin() {
-    const index = Math.floor(Math.random() * 3);
-    const skins = ["police", "interference", "car"];
+    const index = Math.floor(Math.random() * 4);
+    const skins = ["police", "interference", "car", "kamaz"];
 
     return skins[index];
   }
