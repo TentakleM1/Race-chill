@@ -64,6 +64,7 @@ class Core {
     this.checkEvent.push(setInterval(this.loopTemp, this.speed));
 
     this.update();
+    
   }
 
   checkAndRemoveListenEvent() {
@@ -81,7 +82,7 @@ class Core {
   }
 
   spawn() {
-    if (this.npc.length < 4) {
+    if (this.npc.length === 4) { return; }
       const newNpc = new NPC();
 
       const data = newNpc.data;
@@ -95,7 +96,6 @@ class Core {
       this.npc.push(data.id);
 
       this.map[data.position.y + 1][data.position.x] = data;
-    }
   }
 
   temp() {
@@ -157,11 +157,8 @@ class Core {
     this.initialGame();
   }
 
-  moveAndCheckCrash(element, col, row) {
-    const { id, type } = element;
-    if (type === "nope") { return; }
-    if (type === "player") {
-      const data = this.player.data;
+  playerMove(col, row) {
+    const data = this.player.data;
       const { position } = data;
 
       this.map[col][row] = { type: "nope" };
@@ -174,6 +171,13 @@ class Core {
 
       this.player.data.xRoad = this.map[position.y];
       return (this.map[position.y][position.x] = data);
+  }
+
+  moveAndCheckCrash(element, col, row) {
+    const { id, type } = element;
+    if (type === "nope") { return; }
+    if (type === "player") {
+      this.playerMove(col, row);
     }
 
     if (id) {
@@ -339,6 +343,7 @@ class Core {
 
     this.npc = [];
 
+    this.speed = 200;
     this.player = new Player();
   }
 

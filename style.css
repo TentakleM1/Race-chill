@@ -45,7 +45,7 @@ button {
 
 .record-panel {
     display: flex;
-    justify-content: end;
+    justify-content: space-between;
     gap: 50px;
 }
 
