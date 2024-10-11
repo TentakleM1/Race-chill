@@ -134,6 +134,7 @@ class Core {
     this.speed = speed;
     this.level = this.level + 1;
     this.levelElement.innerHTML = this.level;
+    
     if (this.speedBackgorund > 1) {
       this.speedBackgorund = this.speedBackgorund - 0.5;
       this.backgroundElement.style.animationDuration = `${this.speedBackgorund}s`;
@@ -188,10 +189,14 @@ class Core {
               return this.endGame();
             }
 
-            return (this.map[car.position.y][car.position.x] = car);
+            this.map[car.position.y][car.position.x] = car;
+            
+            return;
           }
+
           this.map[col][row] = { type: "kamaz-front" };
           this.map[col - 1][row] = { type: "nope" };
+
           setTimeout(() => {
             this.map[col][row] = { type: "nope" };
           }, this.speed);
@@ -211,6 +216,7 @@ class Core {
           return (this.map[car.position.y][car.position.x] = car);
         }
         this.scoreCount();
+
         return this.npc.shift();
       }
     }
