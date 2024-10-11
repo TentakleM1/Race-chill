@@ -71,15 +71,34 @@ button {
     justify-content: center;
     align-items: center;
 
-    background: url('./assets/sprites/background/grass.png');
+    background: url('./assets/sprites/background/ocean.png');
     animation-name: move-background;
     animation-duration: 3s;
     animation-iteration-count: infinite;
     animation-timing-function: linear;
 }
 
+.borderAnimation {
+    height: 100%;
+    width: 50px;
+    animation-name: move-background;
+    animation-duration: 3s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+
+.borderLeft {
+    background: url('./assets/sprites/map/road_water_right_full.png');
+}
+
+.borderRight {
+    background: url('./assets/sprites/map/road_water_left_full.png');
+}
+
+
+
 .display__game {
-    width: 200px;
+    width: 215epx;
 
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -155,13 +174,6 @@ button {
     height: 50px;
 
     background: yellow;
-}
-
-#none {
-    width: 50px;
-    height: 50px;
-
-    display: flex;
 }
 
 #road {

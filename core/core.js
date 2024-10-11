@@ -17,11 +17,11 @@ class Core {
 
   constructor() {
     this.game = document.getElementById("game");
-    this.start = document.getElementById("start");
-    this.title = document.getElementById("title");
+    this.startElement = document.getElementById("start");
+    this.titleElement = document.getElementById("title");
     this.scoreElement = document.getElementById("score");
-    this.record = document.getElementById("record");
-    this.background = document.getElementById("background");
+    this.recordElement = document.getElementById("record");
+    this.backgroundElement = document.getElementById("background");
     this.levelElement = document.getElementById("level");
 
     this.endgame = false;
@@ -29,6 +29,7 @@ class Core {
     this.rerender = this.update.bind(this);
     this.loopTemp = this.temp.bind(this);
     this.respawn = this.spawn.bind(this);
+    this.changeRoad = this.changeRoadOrResetRoad.bind(this);
 
     this.player = new Player();
     this.npc = [];
@@ -50,21 +51,14 @@ class Core {
 
   initialGame() {
     this.endgame = true;
-
     this.scoreElement.innerHTML = this.score;
-
     this.checkAndRemoveListenEvent();
-
     this.player.addEvent();
-
     this.checkEvent.push(setInterval(this.respawn, this.speedSpawn));
-
-    this.checkEvent.push(setInterval(this.changeRoad.bind(this), 5000));
-
+    this.checkEvent.push(setInterval(this.changeRoad, 5000));
     this.checkEvent.push(setInterval(this.loopTemp, this.speed));
-
     this.update();
-    
+  
   }
 
   checkAndRemoveListenEvent() {
@@ -76,17 +70,15 @@ class Core {
       });
 
       this.checkEvent = [];
-
       cancelAnimationFrame(this.checkUpdate);
     }
   }
 
   spawn() {
     if (this.npc.length === 4) { return; }
+
       const newNpc = new NPC();
-
       const data = newNpc.data;
-
       const checkRoad = this.map[data.position.y + 1][data.position.x];
 
       if (checkRoad.type === "block" || checkRoad.type === "none") {
@@ -94,7 +86,6 @@ class Core {
       }
 
       this.npc.push(data.id);
-
       this.map[data.position.y + 1][data.position.x] = data;
   }
 
@@ -108,9 +99,8 @@ class Core {
     });
   }
 
-  changeRoad() {
+  changeRoadOrResetRoad() {
     const leftOrRight = Math.floor(Math.random() * 2);
-
     if (leftOrRight === 0) {
       const road = this.map[0][0];
 
@@ -145,7 +135,7 @@ class Core {
     this.levelElement.innerHTML = this.level;
     if (this.speedBackgorund > 1) {
       this.speedBackgorund = this.speedBackgorund - 0.5;
-      this.background.style.animationDuration = `${this.speedBackgorund}s`;
+      this.backgroundElement.style.animationDuration = `${this.speedBackgorund}s`;
     }
 
     if (this.speed < 200) {
@@ -265,8 +255,6 @@ class Core {
   draw() {
     this.game.innerHTML = "";
 
-    this.checkMap();
-
     this.map.flat().forEach((road) => {
       const div = document.createElement("div");
       div.id = "row";
@@ -302,6 +290,7 @@ class Core {
     }
 
     this.checkSpeed();
+    this.checkMap();
     this.draw();
     this.checkUpdate = requestAnimationFrame(this.rerender);
   }
@@ -311,15 +300,15 @@ class Core {
 
     this.endgame = false;
 
-    this.background.style.animationDuration = "3s";
+    this.backgroundElement.style.animationDuration = "3s";
     this.speedBackgorund = 3;
 
     this.levelElement.innerHTML = 1;
     this.level = 1;
 
-    this.start.style.visibility = "visible";
+    this.startElement.style.visibility = "visible";
 
-    this.title.innerHTML = "End Game";
+    this.titleElement.innerHTML = "End Game";
 
     this.checkRecord();
 
@@ -357,7 +346,7 @@ class Core {
 
   scoreCount() {
     if (localStorage.getItem("recordRaceChill") <= this.score) {
-      this.record.innerHTML = this.score;
+      this.recordElement.innerHTML = this.score;
     }
     this.scoreElement.innerHTML = this.score;
     this.score = this.score + 1;
@@ -368,7 +357,7 @@ class Core {
     let recordOutLocal = localStorage.getItem("recordRaceChill");
     if (recordOutLocal === null) {
       localStorage.setItem("recordRaceChill", 0);
-      this.record.innerHTML = this.score;
+      this.recordElement.innerHTML = this.score;
       return;
     }
 
@@ -377,6 +366,6 @@ class Core {
       recordOutLocal = this.score - 1;
     }
 
-    this.record.innerHTML = recordOutLocal;
+    this.recordElement.innerHTML = recordOutLocal;
   }
 }
