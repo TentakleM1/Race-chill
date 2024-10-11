@@ -101,6 +101,7 @@ class Core {
 
   changeRoadOrResetRoad() {
     const leftOrRight = Math.floor(Math.random() * 2);
+
     if (leftOrRight === 0) {
       const road = this.map[0][0];
 
