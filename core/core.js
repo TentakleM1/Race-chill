@@ -37,7 +37,7 @@ class Core {
     this.speed = 200;
     this.speedBackgorund = 3;
     this.speedSpawn = 700;
-    this.level = 1
+    this.level = 0;
 
     this.checkUpdate;
     this.checkEvent = [];
@@ -64,23 +64,6 @@ class Core {
     this.checkEvent.push(setInterval(this.loopTemp, this.speed));
 
     this.update();
-  }
-
-  scoreCount() {
-    if (localStorage.getItem("recordRaceChill") <= this.score) {
-      this.record.innerHTML = this.score;
-    }
-    this.scoreElement.innerHTML = this.score;
-    this.score = this.score + 1;
-    this.checkScore();
-  }
-
-  checkScore() {
-    const RemainderOfDivisionTeen = this.score % 10;
-    if (RemainderOfDivisionTeen) {
-      return;
-    }
-    this.player.speed = this.speed - 10;
   }
 
   checkAndRemoveListenEvent() {
@@ -117,19 +100,7 @@ class Core {
 
   temp() {
     this.map.flat().forEach((car) => {
-      if (car.id) {
-        if (car.position.y !== 8) {
-          car.position.y = car.position.y + 1;
-        }
-      }
-
-      if (car.type === "block") {
-        if (car.position.y !== 8) {
-          car.position.y = car.position.y + 1;
-        }
-      }
-
-      if (car.type === "road") {
+      if (car.id || car.type === "block" || car.type === "road") {
         if (car.position.y !== 8) {
           car.position.y = car.position.y + 1;
         }
@@ -159,8 +130,36 @@ class Core {
     }
   }
 
+  checkSpeed() {
+    const speed = this.player.speed;
+    if (speed === this.speed) {
+      return;
+    }
+    this.levelUp(speed);
+  }
+
+  levelUp(speed) {
+    this.endgame = false;
+    this.speed = speed;
+    this.level = this.level + 1;
+    this.levelElement.innerHTML = this.level;
+    if (this.speedBackgorund > 1) {
+      this.speedBackgorund = this.speedBackgorund - 0.5;
+      this.background.style.animationDuration = `${this.speedBackgorund}s`;
+    }
+
+    if (this.speed < 200) {
+      this.speedSpawn = 500;
+    } else {
+      this.speedSpawn = 700;
+    }
+
+    this.initialGame();
+  }
+
   moveAndCheckCrash(element, col, row) {
     const { id, type } = element;
+    if (type === "nope") { return; }
     if (type === "player") {
       const data = this.player.data;
       const { position } = data;
@@ -195,14 +194,14 @@ class Core {
             }
 
             return (this.map[car.position.y][car.position.x] = car);
-          } 
-            this.map[col][row] = { type: "kamaz-front" };
-            this.map[col - 1][row] = { type: "nope" };
-            setTimeout(() => {
-              this.map[col][row] = { type: "nope" };
-            }, this.speed);
-            this.scoreCount();
-            return this.npc.shift();
+          }
+          this.map[col][row] = { type: "kamaz-front" };
+          this.map[col - 1][row] = { type: "nope" };
+          setTimeout(() => {
+            this.map[col][row] = { type: "nope" };
+          }, this.speed);
+          this.scoreCount();
+          return this.npc.shift();
         }
 
         this.map[col][row] = { type: "nope" };
@@ -216,9 +215,8 @@ class Core {
 
           return (this.map[car.position.y][car.position.x] = car);
         }
-          this.scoreCount();
-
-          return this.npc.shift();
+        this.scoreCount();
+        return this.npc.shift();
       }
     }
 
@@ -258,33 +256,6 @@ class Core {
         this.moveAndCheckCrash(element, col, row);
       }
     }
-  }
-
-  levelUp(speed) {
-    this.endgame = false;
-    this.speed = speed;
-    this.level = this.level + 1;
-    this.levelElement.innerHTML = this.level;
-    if(this.speedBackgorund > 1) {
-      this.speedBackgorund = this.speedBackgorund - 0.5;
-      this.background.style.animationDuration = `${this.speedBackgorund.toFixed(1)}s`;
-    } 
-
-    if (this.speed < 200) {
-      this.speedSpawn = 500;
-    } else {
-      this.speedSpawn = 700;
-    }
-
-    this.initialGame();
-  }
-
-  checkSpeed() {
-    const speed = this.player.speed;
-    if (speed === this.speed) {
-      return;
-    }
-    this.levelUp(speed);
   }
 
   draw() {
@@ -341,7 +312,7 @@ class Core {
 
     this.levelElement.innerHTML = 1;
     this.level = 1;
-    
+
     this.start.style.visibility = "visible";
 
     this.title.innerHTML = "End Game";
@@ -369,6 +340,23 @@ class Core {
     this.npc = [];
 
     this.player = new Player();
+  }
+
+  checkScore() {
+    const RemainderOfDivisionTeen = this.score % 10;
+    if (RemainderOfDivisionTeen) {
+      return;
+    }
+    this.player.speed = this.speed - 10;
+  }
+
+  scoreCount() {
+    if (localStorage.getItem("recordRaceChill") <= this.score) {
+      this.record.innerHTML = this.score;
+    }
+    this.scoreElement.innerHTML = this.score;
+    this.score = this.score + 1;
+    this.checkScore();
   }
 
   checkRecord() {

@@ -18,11 +18,4 @@ class NPC extends Character {
     return skins[index];
   }
 
-  getXPosition() {
-    return this.xPosition;
-  }
-
-  getId() {
-    return this.id;
-  }
 }
